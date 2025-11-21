@@ -12,9 +12,9 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List, Literal
 
-# Example schemas (replace with your own):
+# Example schemas (keep for reference):
 
 class User(BaseModel):
     """
@@ -37,6 +37,31 @@ class Product(BaseModel):
     price: float = Field(..., ge=0, description="Price in dollars")
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
+
+# Agent builder schemas
+
+ProviderType = Literal["openai", "anthropic", "openrouter", "meta", "google"]
+
+class Agent(BaseModel):
+    """
+    Agents collection schema
+    Collection name: "agent"
+    """
+    name: str = Field(..., description="Agent display name")
+    provider: ProviderType = Field(..., description="LLM provider")
+    model: str = Field(..., description="Model name, e.g., gpt-4o, claude-3-5-sonnet")
+    system_prompt: str = Field("You are a helpful AI agent.", description="System instruction for the agent")
+    color: str = Field("#7c3aed", description="Accent color hex for UI theming")
+    temperature: float = Field(0.7, ge=0, le=2, description="Sampling temperature")
+
+class ChatMessage(BaseModel):
+    """
+    Messages collection schema (optional, for transcripts)
+    Collection name: "chatmessage"
+    """
+    agent_id: str = Field(..., description="Related agent id")
+    role: Literal["system", "user", "assistant"]
+    content: str
 
 # Add your own schemas here:
 # --------------------------------------------------
